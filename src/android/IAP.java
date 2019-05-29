@@ -493,8 +493,12 @@ public class IAP extends CordovaPlugin {
 		// Convert the java list to JSON
 		JSONArray jsonPurchaseList = new JSONArray();
 		// Iterate all products
-		for (Purchase p : purchaseList) {
-			jsonPurchaseList.put(new JSONObject(p.getOriginalJson()));
+		for (Purchase p : purchaseList) 
+		{
+			JSONObject data = new JSONObject();
+			data.put("json", p.getOriginalJson());
+			data.put("signature", p.getSignature());
+			jsonPurchaseList.put(data);
 		}
 		// Return the JSON list
 		return jsonPurchaseList;
@@ -665,6 +669,8 @@ public class IAP extends CordovaPlugin {
 					purchaseResult.put("receipt", purchase.getToken());
 					purchaseResult.put("productId", purchase.getSku());
 					purchaseResult.put("packageName", cordova.getActivity().getPackageName());
+					purchaseResult.put("json", purchase.getOriginalJson());
+					purchaseResult.put("signature", purchase.getSignature());
 					// Return the object
 					mMakePurchaseCbContext.success(purchaseResult);
 				} catch (JSONException e) { }

@@ -36,11 +36,11 @@ module.exports = {
 		cordova.exec(successCallback, failureCallback, "IAP", "requestStoreListing", [ productIds ]);	
 	},
 
-	purchaseProduct: function(productId, successCallback, failureCallback) {
+	purchaseProduct: function(productId, payload, successCallback, failureCallback) {
 		if (!productId) {
 			return failureCallback("noProductId");
 		}
-		cordova.exec(successCallback, failureCallback, "IAP", "purchaseProduct", [ productId ]);		
+		cordova.exec(successCallback, failureCallback, "IAP", "purchaseProduct", [ productId, payload ]);		
 	},	
 
 	consumeProduct: function (receipt, successCallback, failureCallback) {

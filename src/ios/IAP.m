@@ -12,7 +12,7 @@
 @implementation IAP
 
 - (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
-
+    NSLog(@"Starting IAP plugin");
     if (self) {
         // Register ourselves as a transaction observer
         // (we get notified when payments in the payment queue get updated)
@@ -25,8 +25,9 @@
 - (void)setUp: (CDVInvokedUrlCommand*)command {
     //self.viewController
     //
-
+    [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
 	CDVPluginResult* pr = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self paymentQueue:[SKPaymentQueue defaultQueue] updatedTransactions:[[SKPaymentQueue defaultQueue] transactions]];
 	//[pr setKeepCallbackAsBool:YES];
 	[self.commandDelegate sendPluginResult:pr callbackId:command.callbackId];
 	//CDVPluginResult* pr = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
@@ -204,13 +205,25 @@
                 @"price":       formattedPrice,
                 @"description": obj.localizedDescription
             };
-*/
+*/ 
+            NSString *hasTrial = @"false"
+            if (@available(iOS 11.2, *)) {
+                if(obj.introductoryPrice != nil && obj.introductoryPrice.paymentMode == SKProductDiscountPaymentModeFreeTrial)
+                {
+                    hasTrial = @"true";
+                    NSLog(@"Has trial period");
+                }
+            } else {
+                // Fallback on earlier versions
+            }
+
             NSDictionary *product = nil;
             if(obj.localizedTitle==nil) {
             	product = @{
 	                @"productId":   obj.productIdentifier,
 	                @"title":       @"",
 	                @"price":       formattedPrice,
+                    @"freeTrial":       hasTrial,
 	                @"description": @""
 	            };
             }
@@ -219,6 +232,7 @@
 	                @"productId":   obj.productIdentifier,
 	                @"title":       obj.localizedTitle,
 	                @"price":       formattedPrice,
+                    @"freeTrial":       hasTrial,
 	                @"description": obj.localizedDescription
 	            };
             }

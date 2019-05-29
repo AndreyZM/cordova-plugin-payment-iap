@@ -71,7 +71,7 @@ import java.util.List;
  */
 public class IabHelper {
     // Is debug logging enabled?
-    boolean mDebugLog = false;
+    boolean mDebugLog = true;
     String mDebugTag = "IabHelper";
 
     // Is setup done?
@@ -418,6 +418,12 @@ public class IabHelper {
             e.printStackTrace();
             flagEndAsync();
 
+            result = new IabResult(IABHELPER_REMOTE_EXCEPTION, "Remote exception while starting purchase flow");
+            if (listener != null) listener.onIabPurchaseFinished(result, null);
+        }
+        catch (Exception e)
+        {
+            flagEndAsync();
             result = new IabResult(IABHELPER_REMOTE_EXCEPTION, "Remote exception while starting purchase flow");
             if (listener != null) listener.onIabPurchaseFinished(result, null);
         }
@@ -840,6 +846,7 @@ public class IabHelper {
         String continueToken = null;
 
         do {
+            if (mService == null) return IABHELPER_VERIFICATION_FAILED;
             logDebug("Calling getPurchases with continuation token: " + continueToken);
             Bundle ownedItems = mService.getPurchases(3, mContext.getPackageName(),
                     itemType, continueToken);
@@ -982,7 +989,7 @@ public class IabHelper {
     }
 
     void logDebug(String msg) {
-        if (mDebugLog) Log.d(mDebugTag, msg);
+        Log.e(mDebugTag, msg);
     }
 
     void logError(String msg) {

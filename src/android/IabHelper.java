@@ -85,7 +85,10 @@ public class IabHelper {
 
 	// Is an asynchronous operation in progress?
 	// (only one at a time can be in progress)
-	boolean mAsyncInProgress = false;
+	volatile boolean mAsyncInProgress = false;
+
+	// is set to true if dispose is called while a thread is running. Allows graceful shutdown
+	volatile boolean mDisposeRequested = false;
 
 	// Ensure atomic access to mAsyncInProgress and mDisposeAfterAsync.
 	private final Object mAsyncInProgressLock = new Object();
@@ -290,6 +293,13 @@ public class IabHelper {
 	 * disposed of, it can't be used again.
 	 */
 	public void dispose() {
+		// do not dispose while an async Thread is running. Will cause all kinds of exceptions.
+		// In this case dispose must be called from thread after setting mAsyncInProgress to true
+		if (mAsyncInProgress) {
+			mDisposeRequested = true;
+			return;
+		}
+
 		logDebug("Disposing.");
 		mSetupDone = false;
 		if (mServiceConn != null) {
@@ -864,6 +874,8 @@ public class IabHelper {
 		{
 			mAsyncOperation = "";
 			mAsyncInProgress = false;
+			if (mDisposeRequested)
+				IabHelper.this.dispose();
 		}
 	}
 

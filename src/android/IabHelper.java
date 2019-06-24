@@ -172,6 +172,16 @@ public class IabHelper {
 		logDebug("IAB helper created.");
 	}
 
+	public boolean isAsyncInProgress()
+	{
+		return mAsyncInProgress;
+	}
+
+	public boolean isSetupDone ()
+	{
+		return mSetupDone;
+	}
+
 	/**
 	 * Enables or disable debug logging through LogCat.
 	 */

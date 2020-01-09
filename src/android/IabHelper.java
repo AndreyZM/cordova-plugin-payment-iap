@@ -85,7 +85,10 @@ public class IabHelper {
 
 	// Is an asynchronous operation in progress?
 	// (only one at a time can be in progress)
-	boolean mAsyncInProgress = false;
+	volatile boolean mAsyncInProgress = false;
+
+	// is set to true if dispose is called while a thread is running. Allows graceful shutdown
+	volatile boolean mDisposeRequested = false;
 
 	// Ensure atomic access to mAsyncInProgress and mDisposeAfterAsync.
 	private final Object mAsyncInProgressLock = new Object();
@@ -167,6 +170,16 @@ public class IabHelper {
 		mContext = ctx.getApplicationContext();
 		mSignatureBase64 = base64PublicKey;
 		logDebug("IAB helper created.");
+	}
+
+	public boolean isAsyncInProgress()
+	{
+		return mAsyncInProgress;
+	}
+
+	public boolean isSetupDone ()
+	{
+		return mSetupDone;
 	}
 
 	/**
@@ -290,6 +303,13 @@ public class IabHelper {
 	 * disposed of, it can't be used again.
 	 */
 	public void dispose() {
+		// do not dispose while an async Thread is running. Will cause all kinds of exceptions.
+		// In this case dispose must be called from thread after setting mAsyncInProgress to true
+		if (mAsyncInProgress) {
+			mDisposeRequested = true;
+			return;
+		}
+
 		logDebug("Disposing.");
 		mSetupDone = false;
 		if (mServiceConn != null) {
@@ -594,6 +614,9 @@ public class IabHelper {
 		catch (JSONException e) {
 			throw new IabException(IABHELPER_BAD_RESPONSE, "Error parsing JSON response while refreshing inventory.", e);
 		}
+		catch (NullPointerException e) {
+			throw new IabException(IABHELPER_UNKNOWN_ERROR, "NullPointer while refreshing inventory.", e);
+		}
 	}
 
 	/**
@@ -861,6 +884,8 @@ public class IabHelper {
 		{
 			mAsyncOperation = "";
 			mAsyncInProgress = false;
+			if (mDisposeRequested)
+				IabHelper.this.dispose();
 		}
 	}
 

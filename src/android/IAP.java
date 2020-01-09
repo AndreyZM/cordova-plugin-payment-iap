@@ -285,7 +285,8 @@ public class IAP extends CordovaPlugin {
 					mHelper.queryInventoryAsync(mGotInventoryListener);
 				} else {
 					Log.d(TAG, "Setup successful. Querying inventory w/ SKUs. " + skus.toString());
-					mHelper.queryInventoryAsync(true, skus, mGotDetailsListener);
+					if (!mHelper.isAsyncInProgress() && mHelper.isSetupDone())
+						mHelper.queryInventoryAsync(true, skus, mGotDetailsListener);
 				}
 			}
 		});

@@ -110,6 +110,21 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (void)getPending:(CDVInvokedUrlCommand *)command {
+    NSLog(@"getPendingPurchases");
+
+#if USE_ICLOUD_STORAGE
+    NSUbiquitousKeyValueStore *storage = [NSUbiquitousKeyValueStore defaultStore];
+#else
+    NSUserDefaults *storage = [NSUserDefaults standardUserDefaults];
+#endif
+
+    NSMutableArray *savedReceipts = [[NSMutableArray alloc] initWithArray:[storage objectForKey:@"receipts"]];
+
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:savedReceipts];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void)restorePurchases:(CDVInvokedUrlCommand *)command {
     NSLog(@"restorePurchases");
 
@@ -206,7 +221,7 @@
                 @"description": obj.localizedDescription
             };
 */ 
-            NSString *hasTrial = @"false"
+            NSString *hasTrial = @"false";
             if (@available(iOS 11.2, *)) {
                 if(obj.introductoryPrice != nil && obj.introductoryPrice.paymentMode == SKProductDiscountPaymentModeFreeTrial)
                 {

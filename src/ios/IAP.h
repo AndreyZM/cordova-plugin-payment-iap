@@ -25,6 +25,6 @@
 - (void)consumeProduct:(CDVInvokedUrlCommand *)command;
 - (void)restorePurchases:(CDVInvokedUrlCommand *)command;
 //- (void)canMakePurchase:(CDVInvokedUrlCommand *)command;
-//- (void)getPending:(CDVInvokedUrlCommand *)command;
+- (void)getPending:(CDVInvokedUrlCommand *)command;
 
 @end

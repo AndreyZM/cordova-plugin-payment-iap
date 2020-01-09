@@ -5,15 +5,15 @@ module.exports = {
 	setUp: function(androidApplicationLicenseKey) {
 		cordova.exec(
 			function (result) {
-			}, 
+			},
 			function (error) {
 			},
 			'IAP',
-			'setUp',			
+			'setUp',
 			[androidApplicationLicenseKey]
-		); 
+		);
 	},
-//cranberrygame end	
+//cranberrygame end
 	requestStoreListing: function (productIds, successCallback, failureCallback) {
 		if (!productIds || productIds.length == 0) {
 			return successCallback({});
@@ -27,21 +27,21 @@ module.exports = {
 				tempProductIds.push(productIds);
 			}
 			else {
-				tempProductIds = productIds.split(",");				
+				tempProductIds = productIds.split(",");
 			}
 			productIds = tempProductIds;
 		}
 		//alert(JSON.stringify(productIds));
 		//alert(Object.prototype.toString.call(productIds));
-		cordova.exec(successCallback, failureCallback, "IAP", "requestStoreListing", [ productIds ]);	
+		cordova.exec(successCallback, failureCallback, "IAP", "requestStoreListing", [ productIds ]);
 	},
 
 	purchaseProduct: function(productId, payload, successCallback, failureCallback) {
 		if (!productId) {
 			return failureCallback("noProductId");
 		}
-		cordova.exec(successCallback, failureCallback, "IAP", "purchaseProduct", [ productId, payload ]);		
-	},	
+		cordova.exec(successCallback, failureCallback, "IAP", "purchaseProduct", [ productId, payload ]);
+	},
 
 	consumeProduct: function (receipt, successCallback, failureCallback) {
 		if (!receipt || receipt.length == 0) {
@@ -52,11 +52,15 @@ module.exports = {
 			// an array to be easily dealt with natively.
 			receipt = [ receipt ];
 		}
-	   
+
 		cordova.exec(successCallback, failureCallback, "IAP", "consumeProduct", [ receipt ]);
-	},	
+	},
 
 	restorePurchases: function (successCallback, failureCallback) {
 		cordova.exec(successCallback, failureCallback, "IAP", "restorePurchases", []);
+	},
+
+	getPending: function (successCallback, failureCallback) {
+		cordova.exec(successCallback, failureCallback, "IAP", "getPending", []);
 	}
 };

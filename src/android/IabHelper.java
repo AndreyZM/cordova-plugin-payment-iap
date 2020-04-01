@@ -29,7 +29,7 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.android.vending.billing.IInAppBillingService;
+import com.android.vending.billing.IInAppBillingServiceGP;
 
 import org.json.JSONException;
 
@@ -101,7 +101,7 @@ public class IabHelper {
 	Context mContext;
 
 	// Connection to the service
-	IInAppBillingService mService;
+	IInAppBillingServiceGP mService;
 	ServiceConnection mServiceConn;
 
 	// The request code used to launch purchase flow
@@ -234,7 +234,7 @@ public class IabHelper {
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				if (mDisposed) return;
 				logDebug("Billing service connected.");
-				mService = IInAppBillingService.Stub.asInterface(service);
+				mService = IInAppBillingServiceGP.Stub.asInterface(service);
 				String packageName = mContext.getPackageName();
 				try {
 					logDebug("Checking for in-app billing 3 support.");

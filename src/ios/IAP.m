@@ -11,16 +11,6 @@
 
 @implementation IAP
 
-- (CDVPlugin *)initWithWebView:(UIWebView *)theWebView {
-    NSLog(@"Starting IAP plugin");
-    if (self) {
-        // Register ourselves as a transaction observer
-        // (we get notified when payments in the payment queue get updated)
-        [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-    }
-    return self;
-}
-
 //cranberrygame start
 - (void)setUp: (CDVInvokedUrlCommand*)command {
     //self.viewController
